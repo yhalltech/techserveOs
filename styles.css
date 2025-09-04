@@ -1,0 +1,66 @@
+.fade-in {
+    animation: fadeIn 0.5s;
+}
+.slide-in {
+    animation: slideIn 0.5s;
+}
+.slide-out {
+    animation: slideOut 0.5s;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes slideIn {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(-20px); opacity: 0; }
+}
+.card-hover {
+    transition: all 0.3s ease;
+}
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+.carousel {
+    overflow: hidden;
+    position: relative;
+}
+.carousel-inner {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+.carousel-item {
+    flex: 0 0 100%;
+}
+.selected {
+    border: 2px solid #3b82f6 !important;
+    background-color: #eff6ff !important;
+}
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.5s;
+}
+.order-status-pending {
+    background-color: #fef3c7;
+    color: #f59e0b;
+}
+.order-status-completed {
+    background-color: #d1fae5;
+    color: #10b981;
+}
+.order-status-rejected {
+    background-color: #fee2e2;
+    color: #ef4444;
+}
+.order-status-progress {
+    background-color: #dbeafe;
+    color: #3b82f6;
+}

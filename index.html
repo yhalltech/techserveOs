@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechServe OS Installation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s;
+        }
+        .slide-in {
+            animation: slideIn 0.5s;
+        }
+        .slide-out {
+            animation: slideOut 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateX(20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(-20px); opacity: 0; }
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .carousel {
+            overflow: hidden;
+            position: relative;
+        }
+        .carousel-inner {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+        .carousel-item {
+            flex: 0 0 100%;
+        }
+        .selected {
+            border: 2px solid #3b82f6 !important;
+            background-color: #eff6ff !important;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        .order-status-pending {
+            background-color: #fef3c7;
+            color: #f59e0b;
+        }
+        .order-status-completed {
+            background-color: #d1fae5;
+            color: #10b981;
+        }
+        .order-status-rejected {
+            background-color: #fee2e2;
+            color: #ef4444;
+        }
+        .order-status-progress {
+            background-color: #dbeafe;
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+    <!-- Navigation Bar -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fas fa-laptop-code text-2xl mr-2"></i>
+                <span class="text-xl font-bold">TechServe OS Installation</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="login-btn" class="px-3 py-1 rounded-lg bg-white text-blue-600 font-semibold hover:bg-gray-100">
+                    <i class="fas fa-user mr-1"></i>Track Order
+                </button>
+                <a id="admin-btn" href="admin-login.html" class="hidden px-3 py-1 rounded-lg bg-purple-500 text-white font-semibold hover:bg-purple-600">
+                    <i class="fas fa-cog mr-1"></i>Admin
+                </a>
+                <!-- Secret activation: Triple-click on logo to show admin button -->
+            </div>
+        </div>
+    </nav>
+
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span class="text-gray-700">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Client View (Default) -->
+        <div id="client-view">
+            <!-- Progress Indicator -->
+            <div class="flex justify-center mb-8">
+                <div class="flex items-center">
+                    <div class="flex flex-col items-center text-blue-600">
+                        <div class="rounded-full h-10 w-10 flex items-center justify-center bg-blue-600 text-white">1</div>
+                        <div class="mt-2 text-sm font-medium">Installation Type</div>
+                    </div>
+                    <div class="h-1 w-16 bg-gray-300"></div>
+                    <div class="flex flex-col items-center text-gray-500">
+                        <div class="rounded-full h-10 w-10 flex items-center justify-center bg-gray-300">2</div>
+                        <div class="mt-2 text-sm font-medium">OS Selection</div>
+                    </div>
+                    <div class="h-1 w-16 bg-gray-300"></div>
+                    <div class="flex flex-col items-center text-gray-500">
+                        <div class="rounded-full h-10 w-10 flex items-center justify-center bg-gray-300">3</div>
+                        <div class="mt-2 text-sm font-medium">Details</div>
+                    </div>
+                    <div class="h-1 w-16 bg-gray-300"></div>
+                    <div class="flex flex-col items-center text-gray-500">
+                        <div class="rounded-full h-10 w-10 flex items-center justify-center bg-gray-300">4</div>
+                        <div class="mt-2 text-sm font-medium">Summary</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Component Container -->
+            <div id="component-container" class="bg-white rounded-xl shadow-lg p-6 mb-8 slide-in">
+                <!-- Component 1: Installation Type Selection -->
+                <div id="component-1" class="component">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Choose Installation Type</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="install-type bg-blue-50 border-2 border-blue-200 rounded-xl p-6 text-center card-hover cursor-pointer transition-all duration-300" data-type="full">
+                            <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-desktop text-blue-600 text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Full Installation</h3>
+                            <p class="text-gray-600 mb-4">Install a single operating system</p>
+                            <div class="text-lg font-bold text-blue-600" id="full-installation-price">KSh 100</div>
+                            <button class="select-btn mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                                Select
+                            </button>
+                        </div>
+                        
+                        <div class="install-type bg-green-50 border-2 border-green-200 rounded-xl p-6 text-center card-hover cursor-pointer transition-all duration-300" data-type="dual">
+                            <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-sitemap text-green-600 text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Dual Boot</h3>
+                            <p class="text-gray-600 mb-4">Install two operating systems side by side</p>
+                            <div class="text-lg font-bold text-green-600" id="dual-boot-price">KSh 150</div>
+                            <button class="select-btn mt-4 bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                                Select
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mt-8">
+                        <button id="undo-selection-btn" class="hidden px-4 py-2 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600 transition-colors">
+                            <i class="fas fa-undo mr-2"></i>Undo Selection
+                        </button>
+                        <div class="flex-1"></div>
+                        <button class="continue-btn px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700" disabled>
+                            Continue<i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Component 2: OS Selection -->
+                <div id="component-2" class="component hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Select Operating System</h2>
+                    
+                    <div id="os-selection-full" class="os-selection">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6" id="os-options-container">
+                            <!-- OS options will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div id="os-selection-dual" class="os-selection hidden">
+                        <h4 class="font-medium text-gray-700 mb-3">Select Two Operating Systems for Dual Boot</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <label class="block text-gray-700 mb-2">First Operating System</label>
+                                <select id="dual-os-1" class="w-full p-3 border rounded-lg">
+                                    <option value="">Select First OS</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Second Operating System</label>
+                                <select id="dual-os-2" class="w-full p-3 border rounded-lg">
+                                    <option value="">Select Second OS</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between mt-8">
+                        <button class="back-btn px-5 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">
+                            <i class="fas fa-arrow-left mr-2"></i>Back
+                        </button>
+                        <button class="continue-btn px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700" disabled>
+                            Continue<i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Component 3: Version Selection -->
+                <div id="component-3" class="component hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Select Version(s)</h2>
+                    
+                    <div id="version-selection-container">
+                        <!-- Version selection will be populated by JavaScript -->
+                    </div>
+                    
+                    <div class="flex justify-between mt-8">
+                        <button class="back-btn px-5 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">
+                            <i class="fas fa-arrow-left mr-2"></i>Back
+                        </button>
+                        <button class="continue-btn px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700" disabled>
+                            Continue<i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Component 4: Customer Details -->
+                <div id="component-4" class="component hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Customer Information</h2>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg mb-6">
+                        <div class="flex items-center">
+                            <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                            <span class="text-blue-700">Your order number: <strong id="order-number"></strong></span>
+                        </div>
+                        <p class="text-sm text-blue-700 mt-2">Please save this number to track your order status later.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-gray-700 mb-2">Full Name *</label>
+                            <input type="text" id="customer-name" class="w-full p-3 border rounded-lg" placeholder="John Doe" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">Email Address *</label>
+                            <input type="email" id="customer-email" class="w-full p-3 border rounded-lg" placeholder="john@example.com" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">Phone Number *</label>
+                            <input type="tel" id="customer-phone" class="w-full p-3 border rounded-lg" placeholder="0793587167" pattern="07[0-9]{8}" required>
+                            <p class="text-xs text-gray-500 mt-1">Format: 0793587167 (must start with 07)</p>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">Address *</label>
+                            <input type="text" id="customer-address" class="w-full p-3 border rounded-lg" placeholder="Your address" required>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                        <h3 class="font-semibold text-gray-800 mb-3">Additional Services</h3>
+                        
+                        <div class="flex items-center mb-3">
+                            <input type="checkbox" id="additional-drivers" class="mr-2 h-5 w-5 text-blue-600">
+                            <label for="additional-drivers" class="text-gray-700">Install Additional Drivers (<span id="drivers-price">+KSh 30</span>)</label>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <input type="checkbox" id="office-suite" class="mr-2 h-5 w-5 text-blue-600">
+                            <label for="office-suite" class="text-gray-700">Install Office Suite (<span id="office-price">+KSh 50</span>)</label>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between mt-8">
+                        <button class="back-btn px-5 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">
+                            <i class="fas fa-arrow-left mr-2"></i>Back
+                        </button>
+                        <button id="submit-order-btn" class="continue-btn px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
+                            Submit Request<i class="fas fa-check ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Component 5: Summary -->
+                <div id="component-5" class="component hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Order Summary</h2>
+                    
+                    <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold">Service Details</h3>
+                            <span class="text-blue-600 font-bold" id="summary-total-price">Loading...</span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="text-gray-700"><span class="font-medium">Order Number:</span> <span id="summary-order-number">Loading...</span></div>
+                            <div class="text-gray-700"><span class="font-medium">Installation Type:</span> <span id="summary-type">Loading...</span></div>
+                            <div class="text-gray-700"><span class="font-medium">Operating System:</span> <span id="summary-os">Loading...</span></div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="text-gray-700"><span class="font-medium">Base Price:</span> <span id="summary-base-price">Loading...</span></div>
+                            <div id="summary-addons" class="text-gray-700">
+                                <!-- Add-ons will be populated here -->
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-medium text-gray-700 mb-2">Customer Information:</h4>
+                            <div class="text-gray-600" id="summary-customer">
+                                <!-- Customer info will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <p class="text-gray-600 mb-4">Your request has been received. We will contact you within 24 hours to confirm your appointment.</p>
+                        <button id="return-home-btn" class="px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
+                            <i class="fas fa-home mr-2"></i>Return to Home
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pricing Information -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8 fade-in">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Pricing Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="pricing-info">
+                    <!-- Pricing will be populated from API -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Login View -->
+        <div id="login-view" class="hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6 max-w-md mx-auto">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Track Your Order</h2>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Email Address</label>
+                    <input type="email" id="login-email" class="w-full p-3 border rounded-lg" placeholder="john@example.com" required>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 mb-2">Phone Number</label>
+                    <input type="tel" id="login-phone" class="w-full p-3 border rounded-lg" placeholder="0793587167" pattern="07[0-9]{8}" required>
+                </div>
+                
+                <button id="track-order-btn" class="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700">
+                    Find My Orders
+                </button>
+                
+                <div class="text-center mt-4">
+                    <button id="back-to-home-btn" class="text-blue-600 hover:text-blue-800">Back to Home</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Status View -->
+        <div id="order-status-view" class="hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Your Orders</h2>
+                
+                <div id="orders-container">
+                    <!-- Orders will be populated here -->
+                </div>
+                
+                <div class="text-center mt-6">
+                    <button id="back-to-login" class="px-5 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">
+                        <i class="fas fa-arrow-left mr-2"></i>Back
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">TechServe OS Installation</h3>
+                    <p class="text-gray-400">Professional operating system installation services for Windows and Linux distributions.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Services</h3>
+                    <ul class="text-gray-400 space-y-2">
+                        <li>Full OS Installation</li>
+                        <li>Dual Boot Setup</li>
+                        <li>Driver Installation</li>
+                        <li>Office Suite Setup</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Support</h3>
+                    <div class="text-gray-400 space-y-2">
+                        <div><i class="fas fa-envelope mr-2"></i>support@techserve.co.ke</div>
+                        <div><i class="fas fa-phone mr-2"></i>+254 793 587 167</div>
+                        <div class="mt-4">
+                            <button id="help-btn" class="text-blue-400 hover:text-blue-300 mr-4">Help</button>
+                            <button id="terms-btn" class="text-blue-400 hover:text-blue-300 mr-4">Terms</button>
+                            <button id="about-btn" class="text-blue-400 hover:text-blue-300">About</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
+                <p>&copy; 2025 TechServe OS Installation. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div id="terms-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-xl shadow-lg p-6 max-w-2xl w-full mx-4 max-h-96 overflow-y-auto">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Terms of Service</h2>
+            <div class="prose max-w-none text-gray-700">
+                <p>Last updated: January 2025</p>
+                
+                <h3 class="text-xl font-semibold mt-4">1. Service Agreement</h3>
+                <p>By using our OS installation services, you agree to these terms and conditions.</p>
+                
+                <h3 class="text-xl font-semibold mt-4">2. Service Description</h3>
+                <p>We provide professional operating system installation services including but not limited to Windows, Ubuntu, Kali Linux, and Parrot OS installations.</p>
+                
+                <h3 class="text-xl font-semibold mt-4">3. Pricing and Payment</h3>
+                <p>Our pricing varies based on service type. All prices are in Kenyan Shillings (KSh). Payment is due upon completion of service.</p>
+                
+                <h3 class="text-xl font-semibold mt-4">4. Data Responsibility</h3>
+                <p>While we take precautions to protect your data, we are not responsible for any data loss during the installation process. We recommend backing up your data before proceeding.</p>
+                
+                <h3 class="text-xl font-semibold mt-4">5. Warranty</h3>
+                <p>We provide a 30-day warranty on our installation services. If you experience any issues related to the installation within this period, we will address them at no additional cost.</p>
+            </div>
+            <div class="mt-6 text-right">
+                <button id="close-terms" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="help-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-xl shadow-lg p-6 max-w-2xl w-full mx-4">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Help Center</h2>
+            <div class="prose max-w-none text-gray-700">
+                <h3 class="text-xl font-semibold">How to Place an Order</h3>
+                <ol class="list-decimal list-inside">
+                    <li>Select your installation type (Full or Dual Boot)</li>
+                    <li>Choose your operating system(s)</li>
+                    <li>Select the specific version(s)</li>
+                    <li>Provide your contact information</li>
+                    <li>Review and submit your order</li>
+                </ol>
+                
+                <h3 class="text-xl font-semibold mt-4">Tracking Your Order</h3>
+                <p>After submitting your order, you can track it using your email and phone number provided during order placement.</p>
+                
+                <h3 class="text-xl font-semibold mt-4">Common Questions</h3>
+                <p><strong>Q: How long does the installation process take?</strong><br>
+                A: Typically, a full installation takes 1-2 hours, while dual boot installations may take 2-3 hours.</p>
+                
+                <p><strong>Q: Do I need to provide the OS license?</strong><br>
+                A: For Windows installations, you need to provide a valid license. Linux distributions are generally free.</p>
+                
+                <p><strong>Q: What if I'm not satisfied with the service?</strong><br>
+                A: We offer a 30-day warranty on our installations. Contact us for assistance.</p>
+            </div>
+            <div class="mt-6 text-right">
+                <button id="close-help" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="about-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-xl shadow-lg p-6 max-w-2xl w-full mx-4">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">About TechServe</h2>
+            <div class="prose max-w-none text-gray-700">
+                <p>TechServe is a professional operating system installation service provider based in Kenya, with years of experience helping customers set up their systems with the right OS for their needs.</p>
+                
+                <h3 class="text-xl font-semibold mt-4">Our Services</h3>
+                <ul class="list-disc list-inside">
+                    <li>Windows OS installation (all versions)</li>
+                    <li>Linux distribution installation (Ubuntu, Kali, Parrot, and more)</li>
+                    <li>Dual boot configuration</li>
+                    <li>Driver installation and system optimization</li>
+                    <li>Office suite installation</li>
+                </ul>
+                
+                <h3 class="text-xl font-semibold mt-4">Contact Us</h3>
+                <p>
+                    Email: support@techserve.co.ke<br>
+                    Phone: +254 793 587 167<br>
+                    Location: Meru Nchiru/Mascan, Kenya
+                </p>
+            </div>
+            <div class="mt-6 text-right">
+                <button id="close-about" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
